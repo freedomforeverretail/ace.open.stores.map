@@ -207,12 +207,21 @@
 
                 console.log('🎯 Total markers created:', markers.length);
                 
-                // Fit map to show all open stores
+                // Fit map to show all open stores with better zoom control
                 if (markers.length > 0) {
                     const bounds = new window.google.maps.LatLngBounds();
                     markers.forEach(marker => bounds.extend(marker.getPosition()));
                     
                     map.fitBounds(bounds);
+                    
+                    // Prevent excessive zoom-in by setting a max zoom after fitBounds
+                    const listener = window.google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
+                        const currentZoom = map.getZoom();
+                        if (currentZoom > 5) {
+                            map.setZoom(5);
+                        }
+                    });
+                    
                     console.log('📐 Map bounds fitted to markers');
                 } else {
                     console.log('❌ No markers to fit bounds to');
